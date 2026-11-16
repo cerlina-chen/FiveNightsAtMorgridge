@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import {
-  accept, atADoor, check, clockLabel, createGame, startSelf, submitSelf, tick, toggleDoor, unitMotion, unitsOn, viewCam,
+  accept, atADoor, check, clockLabel, createGame, startSelf, submitSelf, tick, toggleDoor, unitsOn, viewCam,
   type GameState, type Signal,
 } from '../core/gameState';
 import { doorCam } from '../core/sentinel';
@@ -168,7 +168,7 @@ export function SecurityDesk({ start, onEnd }: { start: RunStart; onEnd: (g: Gam
         <span>FLOOR {g.floor}</span>
         {atADoor(g) && <span className="hud-alert">FOOTSTEPS AT A DOOR</span>}
         <span className={`power ${g.power < 25 ? 'low' : ''}`}>
-          POWER {Math.ceil(g.power)}%{g.cam && g.power > 0 && <small className="power-cam"> CAM ON</small>}
+          POWER {Math.ceil(g.power)}%
           <i><b style={{ width: `${g.power}%` }} /></i>
         </span>
         <button id="mute" className="hud-mute" onClick={() => setMuted(toggleMute())}>{muted ? 'SOUND OFF' : 'SOUND ON'}</button>
@@ -176,8 +176,7 @@ export function SecurityDesk({ start, onEnd }: { start: RunStart; onEnd: (g: Gam
 
       <div className="main">
         <Door side="L" g={g} act={act} />
-        <CameraGrid cam={g.cam} units={g.cam ? unitsOn(g, g.cam) : []}
-          motion={{ black: unitMotion(g, 'black'), white: unitMotion(g, 'white') }} tMs={g.elapsedMs} doors={g.doors} clock={clockLabel(g)} glitch={glitch} onSelect={selectCam} />
+        <CameraGrid cam={g.cam} units={g.cam ? unitsOn(g, g.cam) : []} doors={g.doors} clock={clockLabel(g)} glitch={glitch} onSelect={selectCam} />
         <Door side="R" g={g} act={act} />
       </div>
 

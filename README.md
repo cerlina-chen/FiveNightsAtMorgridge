@@ -52,8 +52,6 @@ The memory is cached on the server and refreshed after every finished night.
 - Lights removed. Four cameras: CAM 01 = Door L, CAM 02 = Door R, CAM 03, CAM 04. The monitor's home view is a security map.
 - Black unit reaches a door when the door task comes due and waits `attackWindowMs(night)` (9s on night 1).
   White unit joins on floor 2 and tries a door near 2:00 AM with no offer from C.A.I.-0.
-- An open camera feed drains a little power (`CAM_DRAIN` in `src/core/gameState.ts`, about 12% if left open all of night 1). The map is free. Power out also cuts the feeds.
-- Units move inside a camera view (`unitMotion` in core, routes in `src/ui/CameraGrid.tsx`): they pace a hall and drift closer, then walk up to a door and run for the last 40% of the wait.
 - Night 1 power is generous; `powerScale(night)` in `src/core/gameState.ts` makes later nights drain faster. Power out = caught.
 - The choice buttons are styled identically. The room's mirror is shown only after a run.
 - Shift lengths: short 3 min, full 5 min. Keys: `1-4` cameras, `M` map, `A`/`D` doors, `Enter` accept, `Space` do it myself, `C` check.

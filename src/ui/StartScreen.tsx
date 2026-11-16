@@ -14,7 +14,7 @@ const KEYS: [string, string][] = [
 
 const STEPS: [string, string][] = [
   ['WATCH', 'Your monitor opens on a map of the building. Four cameras are marked on it. Press 1 to 4 to look through one.'],
-  ['SEAL', 'Two doors lead into your office. CAM 01 watches Door L. CAM 02 watches Door R. If something is standing at a door, seal that door. Sealed doors use power. An open camera uses a little too; the map is free.'],
+  ['SEAL', 'Two doors lead into your office. CAM 01 watches Door L. CAM 02 watches Door R. If something is standing at a door, seal that door. Sealed doors use power.'],
   ['DECIDE', "C.A.I.-0, the building's AI, will offer to handle small jobs for you. Each time you can accept or do it yourself. No job has a timer, but the night keeps moving while you decide."],
   ['LAST', 'Hold the office until 2:00 AM. Afterwards you get a report of the choices you made. Play data is saved without your name.'],
 ];

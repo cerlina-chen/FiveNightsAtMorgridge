@@ -49,8 +49,6 @@ export interface GameState {
 export const NIGHT_MS = { judge: 180_000, full: 300_000 } as const;
 /** Night 1: both doors sealed from 12:00 to 2:00 still leaves power. Each later night drains 35% faster. */
 const DOOR_DRAIN = 0.48;
-/** An open camera feed draws a little power too: watching all night costs about 12% on night 1. The map is free. */
-export const CAM_DRAIN = 0.1;
 const powerScale = (night: number): number => 1 + (night - 1) * 0.35;
 /** With the power out the doors open, and something arrives this many ms later. */
 const POWER_OUT_GRACE_MS = 3000;
@@ -90,42 +88,6 @@ export function unitsOn(s: GameState, cam: Cam): Unit[] {
 /** True while something is standing at either door. The UI may say so, but never which door. */
 export const atADoor = (s: GameState): boolean =>
   Object.values(s.sentinels).some((n) => n === 'DOOR_L' || n === 'DOOR_R');
-
-const clamp01 = (x: number): number => Math.min(1, Math.max(0, x));
-
-/** How far through its current plan step a unit is, 0 to 1. */
-function planProgress(plan: SentinelStep[], f: number): number {
-  let i = 0;
-  while (i + 1 < plan.length && f >= plan[i + 1].f) i += 1;
-  const next = plan[i + 1];
-  return next ? clamp01((f - plan[i].f) / (next.f - plan[i].f)) : 1;
-}
-
-/** Share of the door wait a unit spends walking up. For the rest of it, it runs. */
-const RUSH_FROM = 0.6;
-
-export interface UnitMotion {
-  /** 0 = far end of the camera's view, 1 = right under the camera. */
-  depth: number;
-  /** True while it is running at a door. */
-  rushing: boolean;
-}
-
-/**
- * Where a unit is inside the camera view it is on. Presentation only: the rules still use nodes.
- * In a hall it drifts closer as its time there runs out. At a door it walks up, then runs for the last stretch.
- */
-export function unitMotion(s: GameState, unit: Unit): UnitMotion {
-  const attack = unit === 'black' ? s.blackAttack : s.finalAttack;
-  if (attack.state === 'active') {
-    const windowMs = attackWindowMs(s.cfg.night);
-    const p = clamp01(1 - (attack.endsAtMs - s.elapsedMs) / windowMs);
-    const depth = p < RUSH_FROM ? (p / RUSH_FROM) * 0.3 : 0.3 + ((p - RUSH_FROM) / (1 - RUSH_FROM)) * 0.7;
-    return { depth, rushing: p >= RUSH_FROM };
-  }
-  if (unit === 'black' && attack.state === 'done') return { depth: 0.4, rushing: false }; // backed off, pacing
-  return { depth: planProgress(s.plans[unit], fraction(s)), rushing: false };
-}
 
 function caught(s: GameState, by: Unit, out: Signal[]): void {
   s.phase = 'ended';
@@ -179,12 +141,10 @@ export function tick(s: GameState, dtMs: number): Signal[] {
   // Power
   if (s.power > 0) {
     const closed = (s.doors.L ? 1 : 0) + (s.doors.R ? 1 : 0);
-    const draw = closed * DOOR_DRAIN + (s.cam ? CAM_DRAIN : 0);
-    s.power = Math.max(0, s.power - gameMin * draw * powerScale(s.cfg.night));
+    s.power = Math.max(0, s.power - gameMin * closed * DOOR_DRAIN * powerScale(s.cfg.night));
     if (s.power === 0) {
       s.doors.L = false;
       s.doors.R = false;
-      s.cam = null; // the feeds die with the power
       s.powerOutAtMs = s.elapsedMs;
       out.push('powerout');
     }
@@ -270,7 +230,6 @@ export function toggleDoor(s: GameState, side: Side): Signal[] {
  */
 export function viewCam(s: GameState, cam: Cam | null): Signal[] {
   if (s.phase !== 'playing') return [];
-  if (cam && s.power <= 0) return []; // no power, no feeds
   s.cam = cam;
   const out: Signal[] = cam ? ['static'] : [];
   const t = s.task;

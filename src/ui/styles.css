@@ -150,21 +150,7 @@ kbd {
 .monitor { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 8px; min-height: 0; }
 .screen { position: relative; overflow: hidden; background: #020203; border: 2px solid var(--line); border-radius: 3px; min-height: 180px; }
 .feed { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: contrast(1.2) brightness(.62); }
-.figure { position: absolute; transform: translateX(-50%); filter: drop-shadow(0 0 6px #000); overflow: visible; transition: left .12s linear, bottom .12s linear, height .12s linear; }
-/* Walk cycle: the legs take turns shortening and the body bobs. Running is the same cycle, faster and leaning in. */
-.figure .leg, .figure .torso { transform-box: fill-box; }
-.figure .leg { transform-origin: 50% 0; }
-.figure .torso { transform-origin: 50% 100%; }
-.figure.walk .leg { animation: stride .62s ease-in-out infinite; }
-.figure.walk .leg.b { animation-delay: -.31s; }
-.figure.walk .torso { animation: bob .31s ease-in-out infinite; }
-.figure.run .leg { animation: stride .26s ease-in-out infinite; }
-.figure.run .leg.b { animation-delay: -.13s; }
-.figure.run .torso { animation: bob-run .13s ease-in-out infinite; }
-@keyframes stride { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(.62); } }
-@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(2px); } }
-@keyframes bob-run { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(4px) rotate(3deg); } }
-.power-cam { color: var(--warn); font-size: .7em; letter-spacing: 1px; }
+.figure { position: absolute; transform: translateX(-50%); filter: drop-shadow(0 0 6px #000); }
 .figure .body { fill: #040406; }
 .figure.white .body { fill: #cfd5d9; }
 .figure .visor { fill: #0a0b0d; }
@@ -249,8 +235,8 @@ kbd {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .noise, .figure .eye, .figure .leg, .figure .torso, .rec i, .caret, .jump img, .ai-eye, .dots::after { animation: none; }
-  .shutter, .figure { transition: none; }
+  .noise, .figure .eye, .rec i, .caret, .jump img, .ai-eye, .dots::after { animation: none; }
+  .shutter { transition: none; }
 }
 
 /* The room's mirror: shown only after a run */
